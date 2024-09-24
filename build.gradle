@@ -1,9 +1,11 @@
 plugins {
-    id 'java'
-}
+    id 'org.springframework.boot' version '2.7.9'
+    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+    id 'java'}
 
 group = 'org.example'
-version = '1.0-SNAPSHOT'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
 
 repositories {
     mavenCentral()
@@ -12,6 +14,24 @@ repositories {
 dependencies {
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
+    // Spring Boot 核心依賴
+    implementation 'org.springframework.boot:spring-boot-starter'
+    // Spring Boot Web 依賴 (若你有用到 Web 功能，可以選擇性添加)
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    // JPA 依賴 (若有使用數據庫和 JPA)
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    // H2 Database (內存數據庫，開發環境中方便測試，可以替換為你實際使用的數據庫依賴)
+    runtimeOnly 'com.h2database:h2'
+    // 這裡是一些可能用到的其他依賴，比如 JSON 處理、HTTP 請求等 (根據實際需要添加)
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.4'
+    compileOnly 'org.projectlombok:lombok:1.18.26'
+    annotationProcessor 'org.projectlombok:lombok:1.18.26'
+
+    implementation 'net.java.dev.jna:jna:5.13.0'
+    implementation 'net.java.dev.jna:jna-platform:5.13.0'
+    // https://mvnrepository.com/artifact/com.sikulix/sikulixapi
+    implementation group: 'com.sikulix', name: 'sikulixapi', version: '2.0.5'
+
 }
 
 test {
