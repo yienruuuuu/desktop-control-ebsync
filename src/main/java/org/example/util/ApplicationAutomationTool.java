@@ -24,13 +24,37 @@ public class ApplicationAutomationTool {
             long processId = getProcessId(process);  // 获取 Process ID
 
             // 等待應用程式啟動完成
-            Thread.sleep(3000);
+            Thread.sleep(1000);
 
             // 使用 Process ID 將應用程式窗口置頂
             bringWindowToFrontByProcessId((int) processId);
+            WinDef.HWND hwnd = getWindowHandleByProcessId((int) processId);
+            char[] windowText = new char[512];
+            User32.INSTANCE.GetWindowText(hwnd, windowText, 512);
+            System.out.println("窗口標題: " + Native.toString(windowText));
+            if (hwnd != null) {
+                moveWindowToLeftTop(hwnd);  // 將視窗移動到左上角
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    // 將視窗移動到螢幕左上角
+    public static void moveWindowToLeftTop(WinDef.HWND hWnd) {
+        User32 user32 = User32.INSTANCE;
+
+        // 計算左上角的位置和大小
+        int x = 0;  // 左上角的 x 坐標
+        int y = 0;  // 左上角的 y 坐標
+        // 取得窗口的當前位置和大小
+        WinDef.RECT rect = new WinDef.RECT();
+        user32.GetWindowRect(hWnd, rect);
+        int width = rect.right - rect.left;  // 保留窗口的寬度
+        int height = rect.bottom - rect.top;  // 保留窗口的高度
+
+        // 調整視窗位置和大小，將其移動到左上角
+        user32.SetWindowPos(hWnd, null, x, y, width, height, WinUser.SWP_NOZORDER);
     }
 
     // 打開應用程式，並返回 Process 物件
@@ -61,13 +85,24 @@ public class ApplicationAutomationTool {
         User32 user32 = User32.INSTANCE;
         // 取得第一個視窗
         WinDef.HWND hwnd = user32.FindWindow(null, null);
+        char[] className = new char[512];
+
         while (hwnd != null) {
             IntByReference lpdwProcessId = new IntByReference();
             user32.GetWindowThreadProcessId(hwnd, lpdwProcessId);
+
+            // 如果 Process ID 匹配
             if (lpdwProcessId.getValue() == processId) {
-                return hwnd;
+                // 獲取窗口類名
+                User32.INSTANCE.GetClassName(hwnd, className, 512);
+                String clsName = Native.toString(className);
+
+                // 過濾掉不需要的窗口（例如 MSCTFIME UI）
+                if (!clsName.equals("MSCTFIME UI") && !clsName.equals("IME")) {
+                    return hwnd;  // 返回正確的窗口句柄
+                }
             }
-            // 取得下一個視窗
+            // 繼續查找下一個窗口
             hwnd = user32.FindWindowEx(null, hwnd, null, null);
         }
         // 未找到窗口
@@ -148,11 +183,33 @@ public class ApplicationAutomationTool {
                 } else {
                     System.out.println("窗口已關閉: " + folderName);
                 }
+
+                // 移動滑鼠到右邊
+                moveMouseRight();
             } else {
                 System.out.println("未找到文件夹窗口的句柄");
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    // 移動滑鼠到右邊
+    private static void moveMouseRight() {
+        // 取得目前滑鼠的位置
+        WinDef.POINT currentPos = new WinDef.POINT();
+        User32.INSTANCE.GetCursorPos(currentPos);
+
+        // 將滑鼠往右移動 100 像素
+        int newX = currentPos.x + 200; // 向右移動 100 像素
+        int newY = currentPos.y; // 保持 y 座標不變
+
+        // 移動滑鼠
+        boolean result = User32.INSTANCE.SetCursorPos(newX, newY);
+        if (result) {
+            System.out.println("滑鼠已移動到位置: (" + newX + ", " + newY + ")");
+        } else {
+            System.out.println("滑鼠移動失敗");
         }
     }
 }

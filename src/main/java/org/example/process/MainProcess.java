@@ -25,7 +25,7 @@ public class MainProcess extends Thread {
     @Override
     public void run() {
         // 每批處理的數量
-        int countLimitEachBatch = 2;
+        int countLimitEachBatch = 5;
 
         // 取得數字資料夾列表
         List<String> numericFolders = directoryData.numericFolders();
@@ -67,7 +67,7 @@ public class MainProcess extends Thread {
      */
     private static boolean checkIfKeyAndVideoDirNotExist(String numericFolderPath, String folderName) {
         String keysPath = numericFolderPath + File.separator + "keys";
-        String videoPath = numericFolderPath + File.separator + "video";
+        String videoPath = numericFolderPath + File.separator + "frames";
         if (!new File(keysPath).exists() || !new File(videoPath).exists()) {
             System.out.println("keys 或 video 資料夾不存在於目錄: " + folderName);
             return true;

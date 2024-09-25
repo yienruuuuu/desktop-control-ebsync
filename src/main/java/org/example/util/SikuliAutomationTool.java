@@ -50,8 +50,10 @@ public class SikuliAutomationTool {
             Region ebSynthRegion = ebsynthWindow;
             // 定位 keys 資料夾圖示並拖曳到 EbSynth 的 Keyframes 字段
             dragAndDropFolder("keys", "/keyframes.png", ebSynthRegion);
+            Thread.sleep(1000); // 等待
             // 定位 video 資料夾圖示並拖曳到 EbSynth 的 Video 字段
             dragAndDropFolder("video", "/video.png", ebSynthRegion);
+            Thread.sleep(1000); // 等待
             // "Run All" 按鈕 Pattern
             Pattern runAllButton = createPatternFromResource("/run_all_button.png");
 
@@ -94,7 +96,7 @@ public class SikuliAutomationTool {
     public void checkEbSynthWindows(int countLimitEachBatch) {
         try {
             //運行時間先等待
-            Thread.sleep(60000L * countLimitEachBatch);
+            Thread.sleep(120000L * countLimitEachBatch);
 
             Screen screen = new Screen();
             Pattern finishedPattern = createPatternFromResource("/ebsynth_finish_sign.png");
@@ -207,7 +209,7 @@ public class SikuliAutomationTool {
                 try {
                     System.out.println("正在比對圖像: " + imageFile.getName());
                     // 使用 createPatternFromResource 來創建 Pattern
-                    Pattern pattern = createPatternFromResource("/cancel_collection/" + imageFile.getName());
+                    Pattern pattern = createPatternFromResource("/cancel_collection/" + imageFile.getName()).similar(0.8);
 
                     // 在指定的區域內檢查是否存在匹配
                     if (newRegion.exists(pattern) != null) {
