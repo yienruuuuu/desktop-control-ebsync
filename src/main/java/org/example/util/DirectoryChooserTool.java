@@ -101,7 +101,7 @@ public class DirectoryChooserTool {
     private void startProcessing() {
         // 停用按鈕，避免重複點擊
         frame.setTitle("服務運作中...");
-        frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE); // 禁用關閉按鈕
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         DirectoryData directoryData = processDirectory(selectedDirectory);
         if (directoryData.rootPath().isEmpty()) {

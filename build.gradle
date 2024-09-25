@@ -3,6 +3,14 @@ plugins {
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
     id 'java'
     id 'application'
+    id 'edu.sc.seis.launch4j' version '3.0.3'
+}
+
+launch4j {
+    mainClassName = 'org.example.Main'
+    icon = "${projectDir}/src/main/resources/no-face-man.ico"
+    outfile = 'AutoEbsynth.exe'
+    jreMinVersion = '1.8.0'
 }
 
 group = 'org.example'
@@ -11,6 +19,7 @@ sourceCompatibility = '17'
 
 repositories {
     mavenCentral()
+    gradlePluginPortal()
 }
 
 application {
