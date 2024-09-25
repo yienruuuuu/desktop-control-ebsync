@@ -44,7 +44,7 @@ public class DirectoryChooserTool {
         chooseButton.addActionListener(e -> {
             // 開啟目錄選擇器
             JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setCurrentDirectory(new File(System.getProperty("user.home") + "/Desktop"));
+            fileChooser.setCurrentDirectory(new File("F:\\stableDiffusion\\stable-diffusion-webui\\output"));
             fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             int returnValue = fileChooser.showOpenDialog(frame);
             if (returnValue == JFileChooser.APPROVE_OPTION) {
