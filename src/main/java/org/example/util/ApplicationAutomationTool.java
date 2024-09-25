@@ -15,7 +15,7 @@ import java.io.IOException;
  */
 public class ApplicationAutomationTool {
     // EbSynth 應用程式路徑
-    private static final String EBSYNC_APP_PATH = "F:\\下載\\EbSynth-Beta-Win";
+    private static final String EBSYNC_APP_PATH = "F:\\下載\\EbSynth-Beta-Win\\EbSynth.exe";
 
     public void openEbSynth() {
         try {
