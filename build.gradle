@@ -1,7 +1,9 @@
 plugins {
     id 'org.springframework.boot' version '2.7.9'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
-    id 'java'}
+    id 'java'
+    id 'application'
+}
 
 group = 'org.example'
 version = '0.0.1-SNAPSHOT'
@@ -9,6 +11,10 @@ sourceCompatibility = '17'
 
 repositories {
     mavenCentral()
+}
+
+application {
+    mainClass = 'org.example.Main'
 }
 
 dependencies {

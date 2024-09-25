@@ -1,7 +1,7 @@
 package org.example.util;
 
-import org.example.MainProcess;
 import org.example.beans.DirectoryData;
+import org.example.process.MainProcess;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,29 +18,31 @@ import java.util.List;
  */
 public class DirectoryChooserTool {
 
-    private final JFrame frame;  // 使用 JFrame
+    private final JFrame frame;
+    // 選擇目錄
     private File selectedDirectory;
-    private volatile boolean stopRequested = false; // 标记是否请求停止
+    // 標記是否請求停止運行
+    private volatile boolean stopRequested = false;
 
     public DirectoryChooserTool() {
-        // 创建主窗口
-        frame = new JFrame("选择目录");
+        // 建立主視窗
+        frame = new JFrame("選擇目錄");
         frame.setSize(400, 150);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
 
-        // 创建面板来放置组件
+        // 建立面板來放置組件
         JPanel panel = new JPanel();
         panel.setLayout(new FlowLayout());
 
-        // 文本字段用于显示选择的目录路径
+        // 文字欄位用於顯示選取的目錄路徑
         JTextField directoryField = new JTextField(20);
-        directoryField.setEditable(false); // 让文本字段不可编辑
+        directoryField.setEditable(false);
 
-        // "选择目录"按钮
-        JButton chooseButton = new JButton("选择目录");
+        // "選擇目錄"按钮
+        JButton chooseButton = new JButton("選擇目錄");
         chooseButton.addActionListener(e -> {
-            // 打开目录选择器
+            // 開啟目錄選擇器
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setCurrentDirectory(new File(System.getProperty("user.home") + "/Desktop"));
             fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -51,98 +53,83 @@ public class DirectoryChooserTool {
             }
         });
 
-        // "确认"按钮
-        JButton confirmButton = new JButton("确认");
+        // "確認"按鈕
+        JButton confirmButton = new JButton("執行");
         confirmButton.addActionListener(e -> {
             if (selectedDirectory != null) {
-                // 启动处理逻辑
+                // 啟動處理邏輯
                 startProcessing();
             } else {
-                JOptionPane.showMessageDialog(frame, "请选择一个目录！");
+                JOptionPane.showMessageDialog(frame, "請選擇目錄！");
             }
         });
 
         // "停止"按钮
         JButton stopButton = new JButton("停止");
         stopButton.addActionListener(e -> {
-            int confirm = JOptionPane.showConfirmDialog(frame, "确定要停止服务吗？", "确认停止", JOptionPane.YES_NO_OPTION);
-            if (confirm == JOptionPane.YES_OPTION) {
-                stopRequested = true;
-                System.out.println("服务已请求停止。");
-            }
+            stopRequested = true;
+            System.out.println("服務已請求停止。");
         });
 
-        // 添加组件到面板
+        // 新增組件到面板
         panel.add(directoryField);
         panel.add(chooseButton);
         panel.add(confirmButton);
 
-        // 将面板添加到窗口
+        // 將面板新增至視窗
         frame.add(panel, BorderLayout.CENTER);
 
-        // 创建底部面板，放置 "停止" 按钮
+        // 建立底部面板，放置 "停止" 按鈕
         JPanel bottomPanel = new JPanel();
-        bottomPanel.setLayout(new FlowLayout(FlowLayout.RIGHT)); // 右对齐
+        bottomPanel.setLayout(new FlowLayout(FlowLayout.RIGHT)); // 右對齊
         bottomPanel.add(stopButton);
 
-        // 将底部面板添加到窗口
+        // 將底部面板新增至視窗
         frame.add(bottomPanel, BorderLayout.SOUTH);
 
-        // 设置窗口位置在屏幕右下角
+        // 設定視窗位置在螢幕右下角
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int x = screenSize.width - frame.getWidth() - 200;
         int y = screenSize.height - frame.getHeight() - 200;
         frame.setLocation(x, y);
 
-        // 显示窗口
+        // 顯示視窗
         frame.setVisible(true);
     }
 
-    // 启动处理逻辑
+    // 啟動處理邏輯
     private void startProcessing() {
-        // 禁用按钮，避免重复点击
-        frame.setTitle("服务运行中...");
-        frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE); // 禁用关闭按钮
-
+        // 停用按鈕，避免重複點擊
+        frame.setTitle("服務運作中...");
+        frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE); // 禁用關閉按鈕
 
         DirectoryData directoryData = processDirectory(selectedDirectory);
         if (directoryData.rootPath().isEmpty()) {
-            JOptionPane.showMessageDialog(frame, "目录处理失败。");
+            JOptionPane.showMessageDialog(frame, "目錄處理失敗。");
             return;
         }
-        // 调用主程序逻辑，传入 directoryData
+        // 呼叫主程式邏輯，傳入 directoryData
         MainProcess mainProcess = new MainProcess(directoryData, this);
         mainProcess.start();
     }
 
 
-    // 获取停止请求状态
+    // 取得停止請求狀態
     public boolean isStopRequested() {
         return stopRequested;
     }
 
-    // 提供公共方法更新窗口标题
-    public void updateTitle(String title) {
-        SwingUtilities.invokeLater(() -> frame.setTitle(title));
-    }
-
-    // 提供公共方法显示完成消息
-    public void showCompletionMessage(String message) {
-        SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(frame, message));
-    }
-
-    // 提供公共方法关闭窗口
+    // 關閉視窗
     public void closeWindow() {
-        SwingUtilities.invokeLater(() -> frame.dispose());
+        SwingUtilities.invokeLater(frame::dispose);
     }
 
-
-    // 处理目录，返回 DirectoryData
+    // 處理選擇目錄，返回 DirectoryData
     private DirectoryData processDirectory(File directory) {
-        // 获取根目录路径
+        // 取得根目錄路徑
         String rootPath = directory.getAbsolutePath();
 
-        // 遍历目录，找到所有纯数字名称的文件夹
+        // 遍歷目錄，找到所有純數字名稱的資料夾
         File[] subDirs = directory.listFiles(File::isDirectory);
         List<String> numericFolders = new ArrayList<>();
 
@@ -154,11 +141,10 @@ public class DirectoryChooserTool {
                 }
             }
 
-            // 按照数字顺序排序
+            // 依照數字順序排序
             numericFolders.sort(Comparator.comparingInt(Integer::parseInt));
         }
-
-        // 将数据打包为 DirectoryData 对象并返回
+        // 將資料打包為 DirectoryData 物件並傳回
         return new DirectoryData(rootPath, numericFolders);
     }
 }
