@@ -3,6 +3,7 @@ package org.example.process;
 import org.example.beans.DirectoryData;
 import org.example.util.DirectoryChooserTool;
 import org.example.util.SikuliAutomationTool;
+import org.example.util.WriteSpeedMonitoringTool;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -55,9 +56,9 @@ public class MainProcess extends Thread {
             // 將處理過的資料夾從 numericFolders 列表中移除
             numericFolders.removeAll(processedFolders);
             //檢查所有運行中的 EbSynth狀態，直到完成
-            new SikuliAutomationTool(chooserTool).checkEbSynthWindows(countLimitEachBatch);
+//        new SikuliAutomationTool(chooserTool).checkEbSynthWindows(countLimitEachBatch);
+            new WriteSpeedMonitoringTool().monitorEbsynthAndCloseWindowsAfterWork();
         }
-
         // 關閉工具視窗
         chooserTool.closeWindow();
     }
