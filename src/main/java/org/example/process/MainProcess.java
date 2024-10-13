@@ -59,6 +59,8 @@ public class MainProcess extends Thread {
 //        new SikuliAutomationTool(chooserTool).checkEbSynthWindows(countLimitEachBatch);
             new WriteSpeedMonitoringTool().monitorEbsynthAndCloseWindowsAfterWork();
         }
+        // 播放提示音
+        playBeepSound();
         // 關閉工具視窗
         chooserTool.closeWindow();
     }
@@ -76,4 +78,13 @@ public class MainProcess extends Thread {
         return false;
     }
 
+    // 播放提示音的方法
+    public static void playBeepSound() {
+        try {
+            // 使用系統的蜂鳴音效
+            java.awt.Toolkit.getDefaultToolkit().beep();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
