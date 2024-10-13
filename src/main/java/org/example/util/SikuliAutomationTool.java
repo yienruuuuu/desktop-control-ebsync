@@ -1,5 +1,6 @@
 package org.example.util;
 
+import com.sun.jna.platform.win32.WinDef;
 import org.sikuli.script.*;
 
 import javax.imageio.ImageIO;
@@ -39,7 +40,7 @@ public class SikuliAutomationTool {
             applicationAutomationTool.moveWindowToRightHalf(folderName);
             Thread.sleep(3000); // 等待文件夹移動
             // 打開 EbSynth
-            applicationAutomationTool.openEbSynth();
+            WinDef.HWND ebSynthHwnd = applicationAutomationTool.openEbSynth();
             // 使用 SikuliX 識別 EbSynth 初始化介面
             Pattern ebsynthInitial = createPatternFromResource("/ebsynth-init.png");
             // 等待 EbSynth 初始化界面出现
@@ -70,6 +71,8 @@ public class SikuliAutomationTool {
             ebSynthRegion2.click(runAllButton);
             // 關閉數字資料夾
             applicationAutomationTool.closeWindow(folderName);
+            // EbSynth移出畫面，避免干擾
+            applicationAutomationTool.moveWindowOffScreen(ebSynthHwnd);
         } catch (Exception e) {
             e.printStackTrace();
         }

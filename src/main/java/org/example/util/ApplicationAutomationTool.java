@@ -7,6 +7,7 @@ import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.platform.win32.WinUser;
 import com.sun.jna.ptr.IntByReference;
 
+import java.awt.*;
 import java.io.IOException;
 
 /**
@@ -17,7 +18,7 @@ public class ApplicationAutomationTool {
     // EbSynth 應用程式路徑
     private static final String EBSYNC_APP_PATH = "F:\\下載\\EbSynth-Beta-Win\\EbSynth.exe";
 
-    public void openEbSynth() {
+    public WinDef.HWND openEbSynth() {
         try {
             // 打開 EbSynth 應用程式
             Process process = openApplication(EBSYNC_APP_PATH);
@@ -34,10 +35,13 @@ public class ApplicationAutomationTool {
             System.out.println("窗口標題: " + Native.toString(windowText));
             if (hwnd != null) {
                 moveWindowToLeftTop(hwnd);  // 將視窗移動到左上角
+                // 回傳該視窗的權柄
+                return hwnd;
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     // 將視窗移動到螢幕左上角
@@ -55,6 +59,28 @@ public class ApplicationAutomationTool {
 
         // 調整視窗位置和大小，將其移動到左上角
         user32.SetWindowPos(hWnd, null, x, y, width, height, WinUser.SWP_NOZORDER);
+    }
+
+    // 將視窗移出螢幕
+    public void moveWindowOffScreen(WinDef.HWND hWnd) {
+        User32 user32 = User32.INSTANCE;
+
+        // 取得當前螢幕的解析度高度
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int screenHeight = screenSize.height;
+
+        // 設定新的 Y 座標，將視窗移到螢幕底部之外
+        int offScreenY = screenHeight + 100;  // 移動到螢幕底部之後 100 像素處
+
+        // 取得視窗的當前位置和大小
+        WinDef.RECT rect = new WinDef.RECT();
+        user32.GetWindowRect(hWnd, rect);
+        int x = rect.left;  // 保持當前 X 座標不變
+        int width = rect.right - rect.left;  // 保留窗口的寬度
+        int height = rect.bottom - rect.top;  // 保留窗口的高度
+
+        // 將視窗移到螢幕底部之外
+        user32.SetWindowPos(hWnd, null, x, offScreenY, width, height, WinUser.SWP_NOZORDER);
     }
 
     // 打開應用程式，並返回 Process 物件
