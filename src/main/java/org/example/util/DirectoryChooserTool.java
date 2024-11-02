@@ -102,14 +102,20 @@ public class DirectoryChooserTool {
         // 停用按鈕，避免重複點擊
         frame.setTitle("服務運作中...");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        List<File> fileList = processRootDirectory(selectedDirectory);
+        List<DirectoryData> directoryDataList = new ArrayList<>();
 
-        DirectoryData directoryData = processDirectory(selectedDirectory);
-        if (directoryData.rootPath().isEmpty()) {
-            JOptionPane.showMessageDialog(frame, "目錄處理失敗。");
-            return;
+        for (File file : fileList) {
+            DirectoryData directoryData = processDirectory(file);
+            if (directoryData.rootPath().isEmpty()) {
+                JOptionPane.showMessageDialog(frame, "目錄處理失敗。");
+                return;
+            }
+            directoryDataList.add(directoryData);
         }
+
         // 呼叫主程式邏輯，傳入 directoryData
-        MainProcess mainProcess = new MainProcess(directoryData, this);
+        MainProcess mainProcess = new MainProcess(directoryDataList, this);
         mainProcess.start();
     }
 
@@ -146,6 +152,30 @@ public class DirectoryChooserTool {
         }
         // 將資料打包為 DirectoryData 物件並傳回
         return new DirectoryData(rootPath, numericFolders);
+    }
+
+    // 處理根目錄，返回包含所有 "eb" 資料夾的清單
+    private List<File> processRootDirectory(File directory) {
+        // 創建用來儲存所有 "eb" 資料夾的清單
+        List<File> ebFolders = new ArrayList<>();
+        findEbFolders(directory, ebFolders);
+
+        // 傳回包含所有 "eb" 資料夾的清單
+        return ebFolders;
+    }
+
+    // 遞迴函數來查找所有的 "eb" 資料夾
+    private void findEbFolders(File directory, List<File> ebFolders) {
+        File[] subDirs = directory.listFiles(File::isDirectory);
+        if (subDirs != null) {
+            for (File subDir : subDirs) {
+                if (subDir.getName().contains("eb")) {
+                    ebFolders.add(subDir);
+                } else {
+                    findEbFolders(subDir, ebFolders);
+                }
+            }
+        }
     }
 }
 
